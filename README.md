@@ -1,71 +1,56 @@
-## Crime Incidents Reporter
+## Asignment0 - Data Engineering
 
-## Author: Varshitha Choudary Vasireddy
+## Author: Rajesh Uppala
 
-## Description of the project:
+## Description
 
 The Norman, Oklahoma police department regularly reports incidents, arrests, and other activities. This data is distributed to the public in the form of PDF files. (https://www.normanok.gov/public-safety/police-department/crime-prevention-data/department-activity-reports)
-The website contains three types of summaries arrests, incidents, and case summaries. In this project a function is built that collects only the incidents. And Following operations are done
 
-- To download the data given one incident pdf
+- To download the data given one incident pdf using url
 - To Extract the below fields:
-  - Date / Time
+  - Time
   - Incident Number
   - Location
   - Nature
   - Incident ORI
-- To create a SQLite database to store the data;
-- To Insert the data into the database;
-- To Print each nature and the number of times it appears
+- create a SQLite database to store the data;
+- Insert the data into the database;
+- Print each nature and the number of times nature appears
 
 ## Setting up the Initial installations 
-We run the following installations in the project's virtual environment. Even if the installations are done in the Python environment, in the project's virtual environment, there might be an error popping up "no module named nltk"
+In the project's virtual environment, we execute the following installations. 
 ~~~
-pipenv install pyPDF2
+pipenv install pypdf
 ~~~
-The other packages are built-in modules, so they don't need to be installed separately rather they just have to be imported into the code.
+The rest of the packages are part of the standard library, so there's no need for separate installations; they only need to be imported into the script.
 
 
-## Packages Required for Project:
+## Packages Required:
 
-- urllib.request
-- tempfile
-- PyPDF2
-- re
+- requests
 - sqlite3
+- pypdf
+- re
+- io
 \
 The projects have below files: 
 ## 1. main.py 
  
-project0.py is imported into this file and below mentioned functions will be executed by function calling. The URL will be accepted as an input argument.
-\
-- Data downloaded function 
-  - incident_data = project0.fetchincidents(url)
-
-- Data Extract function
-  - incidents = project0.extractincidents(incident_data)
-
-- New database creation function
-  - db = project0.createdb()
-
-- Insert data function
-  - project0.populatedb(db, incidents)
-
-- Print incident counts function
-  - print(project0.status(db))
+assignment0.py is imported into this file.
+This file will get the url as argument. 
+Functions for extracting data, parsing data and printing the data is present in assignment0 module. These functions are called from this file.
 
 ## 2. project0.py
 
-
 ### **fetchincidents(url)**
 
-url will be the input for this function, url data will be read using urllib.request (extensible library for opening URLs) is used to read the data in the url given. The url that is given will be the incident data url.
+This function downloads a PDF document from a given URL
+Makes an HTTP GET request to the specified URL to retrieve the PDF, then reads the PDF into a PdfReader object for processing.
 
 ### **extractincidents(incident_data)**
 
-A temporary file is created using tempfile package (generates temporary files and directory), and onto that temporary file the input argument that this function takes i.e incident data is written into it.
-PyPDF2 is used to read the pdf file where that data is stored in temporary file that is created in the previous steps. Total page numbers in the pdf file is read.
-I divided my function into 2 parts where on first page I conducted few operations and onto rest of the pdf file pages I did few operations.
+Extracts incident information from all pages of the provided PDF document.
+Iterates through each page of the PDF, extracting text and processing it through parsePage to compile a comprehensive list of incidents.
 
 On the first page of pdf below operations will be done
 
