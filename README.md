@@ -52,9 +52,9 @@ Makes an HTTP GET request to the specified URL to retrieve the PDF, then reads t
 Extracts incident information from all pages of the provided PDF document.
 Iterates through each page of the PDF, extracting text and processing it through parsePage to compile a comprehensive list of incidents.
 
-On the first page of pdf below operations will be done
+On the first page and last page of pdf, some unnecessary text is removed using following logic
 
-![SS1](https://user-images.githubusercontent.com/96924488/157275676-4511219a-d0b0-4d38-8e2c-3ec4c002a550.png)
+![image](https://github.com/rajeshuppala1449/EPAM_git/assets/48644047/adb1b3fb-5b13-40e9-8431-ce467812d23b)
 
 replace() method is used to removed unwanted information present in the first pdf page of the incident file. In order to read the second lines of columns " \n" is replaced
 to just space so that I can perform operations on the edited data. Then using regex function and sub() function are used to put || operators
