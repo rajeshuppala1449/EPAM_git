@@ -63,10 +63,15 @@ Entire page is coverted to lines, these lines are passed to parsePage() function
 The **parsePage** function is designed to parse through lines of text from a document, extracting specific information about incidents to populate an incident list. Each line is analyzed to identify and extract key pieces of information based on patterns defined by regular expressions. The extracted details include the time of the incident, the incident number, the location (address), the nature of the incident, and the Originating Agency Identifier (ORI). These details are then compiled into a list that represents a single incident record. The function operates as follows:
 
 **Time Extraction:** Searches each line for a time pattern (e.g., "HH:MM") using a regular expression. If a match is found, the time is recorded.
+
 **Nature of Incident:** If the time is not found (indicating the line doesn't contain the time of an incident), the function then looks for the nature of the incident. This search is based on a pattern that expects one or more capital letters followed by lowercase letters, possibly separated by spaces or slashes, indicating the type of incident (e.g., "Theft", "Assault").
+
 **Incident Number Extraction:** Independently of the time and nature, searches for an incident number formatted as "YYYY-NNNNNNNN".
+
 **Address Extraction:** After identifying an incident number, it looks for the address or location of the incident. This could be a specific format (numbers, letters, slashes, dashes, spaces) or a placeholder ("<UNKNOWN>") if the location is not specified.
+
 **Nature of Incident:** If the initial nature search was not successful, it conducts a more focused search for the nature of the incident based on specific keywords ("COP", "MVA", "EMS", "911"), followed by additional descriptive text.
+
 **ORI Extraction:** Searches for specific ORI codes within the line, which are unique codes assigned to agencies.
 
 Constructs a list with the extracted time, incident number, address, nature, and ORI, and appends this list to incidentList, which accumulates all incident records.
@@ -74,15 +79,9 @@ This function systematically breaks down each line of text to extract and organi
 
 
 
-**handling the missing values in the data**
+**Handling missing files**
 <br>
-We need the data to be present as a list of 5, beacuse there are 5 columns in the pdf, so upon research from the pdf's given I could see that only 3rd column and 4th column i.e 
-location and nature will only be the missing columns. A new 5 length list is created where when the list is of 5 length then the same is copied into the list and if the
-the list length is 4, I assumed that nature is missing in the row, and left the 4th list element empty and filled the other list elements.
-When the list length is 3, I assumed that both location and nature columns are missing so 3rd and 4th list elements are kept empty, and other list elements are filled.
-
-Finally as part of this function data which consists of the list of data as its elements will be returned.
-
+In some cases, the address and nature fields in the incident data rows are missing. When these fields are identified as empty through regex extraction, they are then assigned an empty string to ensure consistency in the data format.
 
 ### **createdb(path)**
 
@@ -131,7 +130,7 @@ Run the following command ro run the tests
 
 - **Step1** \
 clone the project directory using below command 
-> git clone  https://github.com/VarshithaCVasireddy/Crime_Incidents_Reporter
+> git clone  https:
 
 - **Step2** \
 Navigate to directory that we cloned from git and run the below command to install dependencies
