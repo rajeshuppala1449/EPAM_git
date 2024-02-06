@@ -56,18 +56,23 @@ On the first page and last page of pdf, some unnecessary text is removed using f
 
 ![image](https://github.com/rajeshuppala1449/EPAM_git/assets/48644047/adb1b3fb-5b13-40e9-8431-ce467812d23b)
 
-replace() method is used to removed unwanted information present in the first pdf page of the incident file. In order to read the second lines of columns " \n" is replaced
-to just space so that I can perform operations on the edited data. Then using regex function and sub() function are used to put || operators
-between each row. So now the data is split into list near the "\n||" operator. So this will create a list, where the each row is considered as list.
-A new empty list is created and this list data is appended to it.
+Entire page is coverted to lines, these lines are passed to parsePage() function to get incidnets list.
 
-On the remaining pages of pdf below operations will be done
+### **parsePage(text,incidentList)**
 
-![SS2](https://user-images.githubusercontent.com/96924488/157276054-a94f977c-bb7c-45e8-9ee4-dbc9e98ed633.png)
+The **parsePage** function is designed to parse through lines of text from a document, extracting specific information about incidents to populate an incident list. Each line is analyzed to identify and extract key pieces of information based on patterns defined by regular expressions. The extracted details include the time of the incident, the incident number, the location (address), the nature of the incident, and the Originating Agency Identifier (ORI). These details are then compiled into a list that represents a single incident record. The function operates as follows:
 
-So the same operations that are mentioned above are performed onto all pages. Since there will be no unwanted data in reamining pages the function to replace unwanted data is not used in this.
+**Time Extraction:** Searches each line for a time pattern (e.g., "HH:MM") using a regular expression. If a match is found, the time is recorded.
+**Nature of Incident:** If the time is not found (indicating the line doesn't contain the time of an incident), the function then looks for the nature of the incident. This search is based on a pattern that expects one or more capital letters followed by lowercase letters, possibly separated by spaces or slashes, indicating the type of incident (e.g., "Theft", "Assault").
+**Incident Number Extraction:** Independently of the time and nature, searches for an incident number formatted as "YYYY-NNNNNNNN".
+**Address Extraction:** After identifying an incident number, it looks for the address or location of the incident. This could be a specific format (numbers, letters, slashes, dashes, spaces) or a placeholder ("<UNKNOWN>") if the location is not specified.
+**Nature of Incident:** If the initial nature search was not successful, it conducts a more focused search for the nature of the incident based on specific keywords ("COP", "MVA", "EMS", "911"), followed by additional descriptive text.
+**ORI Extraction:** Searches for specific ORI codes within the line, which are unique codes assigned to agencies.
 
-![SS3](https://user-images.githubusercontent.com/96924488/157276113-7551669e-4ef2-4f50-9ac9-4c663c59c762.png)
+Constructs a list with the extracted time, incident number, address, nature, and ORI, and appends this list to incidentList, which accumulates all incident records.
+This function systematically breaks down each line of text to extract and organize critical information about incidents into a structured format, facilitating further analysis or record-keeping.
+
+
 
 **handling the missing values in the data**
 <br>
@@ -79,104 +84,38 @@ When the list length is 3, I assumed that both location and nature columns are m
 Finally as part of this function data which consists of the list of data as its elements will be returned.
 
 
-### **createdb()**
+### **createdb(path)**
 
-![SS4](https://user-images.githubusercontent.com/96924488/157276729-ce708bdb-ed09-4d30-8b8c-4d5a79b3e5fd.png)
-<br>
-Database is named as data.db. Then connection is made to the SQLite database using **sqlite3.connect ()** and then this connection will be called as cursor and statement are executed on it.
-A new table is created namely "incident" as shown above, table will be dropped if it exists before creating the table, so that we don't get error telling that table is already present.
-This table is commited and connection is closed. Database name will be returned as part of this function.
 
-### **populatedb(db_name, incidents)**
+The createdb function is designed to create a new SQLite database for storing incident records. It takes a file path as its argument, which specifies where the SQLite database file should be created or opened if it already exists. Here's a step-by-step breakdown of what the function does:
+-Connect to the SQLite Database
+-Create Cursor Object
+-Drop Existing Table (if exists)
+-Create incidents Table
+-Return Connection
 
-The list from extractincidents() and  db name from createdb() is passed as input parameters to **populatedb()**,
-
-![SS5](https://user-images.githubusercontent.com/96924488/157276824-c7560c23-7437-4f02-b796-2378f8cd3d42.png)
+![image](https://github.com/rajeshuppala1449/EPAM_git/assets/48644047/da903d11-bb11-4ccc-bf31-f04dc4e6ad19)
 <br>
 
-In this function a connection is made to the database that is passed. 
-And list elements of the incident data file will be read into the varibables and these will be used to insert data into the table.
+The function then executes a multi-line SQL command to create a new table named incidents if it does not already exist. The table is structured with five columns to store the incident time (incident_time), incident number (incident_number), incident location (incident_location), the nature of the incident (nature), and the Originating Agency Identifier (incident_ori).
 
-### **status(db)**
+### **populatedb(conn, incidentList)**
 
-![SS6](https://user-images.githubusercontent.com/96924488/157276845-b57e90d3-f674-449e-9966-dbaf60c08e4a.png)
-<br>
-Database is taken as the input parameter. A connection is made to the database. And the **SELECT** statement is executed, where nature is selected and it is counted. 
-And the list is sorted first by the total number of incidents and secondarily, alphabetically by the nature. Each field of the row is separated by the pipe character "|".
+The populatedb function is designed to insert a list of incident records into an existing SQLite database table named incidents. It takes two parameters: conn, a SQLite connection object representing an open connection to the database, and incidentList, a list of tuples where each tuple contains data for a single incident record. 
 
-## Pytest framework for the project :
-I used the Pytest framework in Python to check for the individual test cases. To run the pytest framework, we need to first ensure if we have the pytest installed in our current project directory. I used the following command to install the pytest in my project's execution virtual environment.
-~~~
-pipenv install pytest
-~~~
-
-## 3.test_project0.py
-
-The test_project0.py file contains the unit testcases to test each method of project0.py if it is working are not, in this file we written the below 5 testcases to test each method.
-Below are imported for this file
-- pytest
-- NoneType from types
-- os
-- io
-- sqlite3
-- project0
-<br>
-In tests folder I attached a pdf file called sample.pdf to test my functions.
-
-![SS7](https://user-images.githubusercontent.com/96924488/157276897-8e529aa1-cbc9-4147-b1de-97d02a14ff88.png)
-
-<br>
-os. getcwd() returns the absolute path of the working directory where Python is currently running as a string str.
-So from the command
-
+![image](https://github.com/rajeshuppala1449/EPAM_git/assets/48644047/dbc2bd1a-7741-4ab9-8bf6-01c2f4344cff)
 <br>
 
-return os.path.join(cwd, 'tests', 'sample.pdf')
+This function returns conn.total_changes, which is an attribute of the SQLite connection object that indicates the total number of database rows that have been modified, inserted, or deleted since the database connection was opened. In the context of this function, it reflects the number of incident records successfully inserted into the database by this operation.
+
+### **status(conn)**
+
+The status function queries an SQLite database to summarize the occurrence frequency of different incident natures within the incidents table. It accomplishes this by creating a cursor from the given connection (conn), executing a SQL query to group incidents by their nature and count the occurrences of each group, then fetching the results. These results are sorted in descending order by count and, if counts are equal, alphabetically by nature. After sorting, the function formats these grouped counts into a list of strings, each representing a unique incident nature followed by its occurrence count, separated by a pipe symbol (|). Finally, the database connection is closed, and the formatted list is returned, providing a concise summary of incident data grouped by nature.
+![image](https://github.com/rajeshuppala1449/EPAM_git/assets/48644047/347b2ac1-d98c-40bf-8438-8d6356c5187a)
 <br>
-it returns the path to sample.pdf file from tests directory in the current directory
-
-### **test_fetchincidents():**
-<br>
-
-![SS8](https://user-images.githubusercontent.com/96924488/157276943-3ca0ab7e-c1e8-4634-a84f-381c2439b69a.png)
-
-<br>
-In this test method operations of fetchincidents method will be done on the "sample file" and then it is checked if the file is of type bytes from assert isinstance.
-As the fetchincidents function should have bytes as data.
-
-### **test_extractincidents():**
-
-![SS9](https://user-images.githubusercontent.com/96924488/157276967-806dc69a-7924-4fdd-be29-13aab0d523a9.png)
-<br>
-In this test case we test the extractincidents, the sample will be opened and operations of extractincidents method will be performed on this file. The list data length of the sample file I used is "237" so after performing the method to the data, it is checked if the result is same as the len of the data that I used, to check the method. If it is same then the test case will be passed.
-<br>
-
-### **test_createdb():**
-
-![SS10](https://user-images.githubusercontent.com/96924488/157277006-e4afe9a2-13c0-4efe-9a8a-bb43429ab2b9.png)
-<br>
-In this testcase we would test the **createdb()**, A database is created, and it's path will be taken from below command.
-~~~
-db_path = os.path.join(os.getcwd(), db_name)
-~~~
-And if a database is created a path to that database will exists so it will be checked, if it is true then database connection is made. When database connection is made there will be no total changes in the connection so it will be checked. Finally the path of the database is removed in the end of test.
-
-### **test_populatedb( ):**
-
-![SS11](https://user-images.githubusercontent.com/96924488/157277066-8a4f6117-6794-474d-b636-d9aa26a3ef1e.png)
-<br>
-In this method we test the **populated()** method, few incidents will be pushed into the database. populate_db method will return the count of total changes, so this count will be taken after inserting the data and this is compared with length of the incidents that I pushed into the table, if both are same then the test case is passed. Finally the path to the database will be removed.
-
-## **test_status( ):**
-
-In this method we test the **status()** method.
-<br>
- ![SS12](https://user-images.githubusercontent.com/96924488/157277117-c3821d7e-5670-491d-8e92-c2cb24d61d62.png)
-<br>
-Like previous function, incidents data will be pushed into the database. Then populatedb method will be executed on it, it will give a result and that result is compared with result that we already expect, and if they both are same test case will be passed.
 
 ## To run the Pytest : 
-I used the following command to run my python tests for the given function.
+Run the following command ro run the tests
 ~~~
  pipenv run python -m pytest
 ~~~
