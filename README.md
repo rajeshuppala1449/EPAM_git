@@ -140,7 +140,7 @@ Navigate to directory that we cloned from git and run the below command to insta
 - **Step3** \
 Then run the below command by providing URL
 
-> pipenv run python project0/main.py --incidents **URL**
+> pipenv run python assignment0/main.py --incidents **URL**
 
 - **Step4** 
 
